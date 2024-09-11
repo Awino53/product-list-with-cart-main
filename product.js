@@ -1,4 +1,5 @@
-const products=[
+ 
+const products = [
     {
        "image": {
             "thumbnail": "./assets/images/image-waffle-thumbnail.jpg",
@@ -9,7 +10,7 @@ const products=[
        "name": "Waffle with Berries",
        "category": "Waffle",
        "price": 6.50,
-       "id":1
+       "id": 1
     },
     {
         "image": {
@@ -21,7 +22,7 @@ const products=[
         "name": "Vanilla Bean Crème Brûlée",
         "category": "Crème Brûlée",
         "price": 7.00,
-        "id":2
+        "id": 2
      },
      {
         "image": {
@@ -32,8 +33,8 @@ const products=[
         },
         "name": "Macaron Mix of Five",
         "category": "Macaron",
-        "price": 8.00,
-        "id":3
+        "price": 8.00,    
+        "id": 3
      },
      {
         "image": {
@@ -45,7 +46,7 @@ const products=[
         "name": "Classic Tiramisu",
         "category": "Tiramisu",
         "price": 5.50,
-        "id":4
+        "id": 4
      },
      {
         "image": {
@@ -57,7 +58,7 @@ const products=[
         "name": "Pistachio Baklava",
         "category": "Baklava",
         "price": 4.00,
-        "id":5
+        "id": 5
      },
      {
         "image": {
@@ -69,7 +70,7 @@ const products=[
         "name": "Lemon Meringue Pie",
         "category": "Pie",
         "price": 5.00,
-        "id":6
+        "id": 6
      },
      {
         "image": {
@@ -81,7 +82,7 @@ const products=[
         "name": "Red Velvet Cake",
         "category": "Cake",
         "price": 4.50,
-        "id":7
+        "id": 7
      },
      {
         "image": {
@@ -93,7 +94,7 @@ const products=[
         "name": "Salted Caramel Brownie",
         "category": "Brownie",
         "price": 4.50,
-        "id":8
+        "id": 8
      },
      {
         "image": {
@@ -105,30 +106,129 @@ const products=[
         "name": "Vanilla Panna Cotta",
         "category": "Panna Cotta",
         "price": 6.50,
-        "id":9
+        "id": 9
      }
 ]
 
-const cart=[]
-//show all the products in the page
+let cart = []
+//  show all products in the page
 
-const ourProductsDiv=document.querySelector("#products-list")
+const ourProductsDiv = document.querySelector("#products-list")
 
-function  showProducts(array) {
-    array.forEach(product => {
-        const newDiv=document.createElement("div")
-        newDiv.innerHTML=`
-           <img class="mobile" src="${product.image.mobile}" alt="${product.name}">
-           <img class="tablet" src="${product.image.tablet}" alt="${product.name}">
-           <img class="desktop" src="${product.image.desktop}" alt="${product.name}">
-           <div>
-               <button>Add To Cart</button>
-           </div>
-           <p>${product.category}</p>
-           <h3>${product.name}</h3>
-           <p>${product.price}</p>
+function showProducts(arr){
+    arr.forEach(product=>{
+        const newDiv = document.createElement("div")
+        newDiv.classList.add("product-card")
+        newDiv.innerHTML = `
+            <img class="mobile" src="${product.image.mobile}" alt="${product.name}" >
+            <img class="tablet" src="${product.image.tablet}" alt="${product.name}" >
+            <img class="desktop" src="${product.image.desktop}" alt="${product.name}" >
+            <div class="action-box">
+                <button class="add-to-cart" id="btn-${product.id}"  >Add To Cart</button>
+            </div>
+            <p> ${product.category} </p>
+            <h3>${product.name}</h3>
+            <p> KSH. ${new Intl.NumberFormat().format(product.price * 128)} </p>
         `
         ourProductsDiv.append(newDiv)
-    });
+    })
 }
 showProducts(products)
+
+const addToCartButtons = document.querySelectorAll(".add-to-cart")
+
+addToCartButtons.forEach(btn=>{
+    btn.addEventListener("click", (e)=>{
+            // console.log(e.target.id.split("-")[1] );
+            // console.log(e.target.getAttribute("id"));
+            const clickedProductId = e.target.id.split("-")[1]
+            const clickedProduct = products.find(p=>p.id==clickedProductId)
+            clickedProduct.count = 1
+            if(!cart.some(p=>p.id==clickedProductId)){
+                cart.push(clickedProduct)
+            }
+            console.log(cart);
+            showCart(cart)
+            changeButtonToCounter(e.target.parentElement, clickedProductId)// div -action-box
+            
+    })
+})
+
+const ourCartDiv = document.querySelector(".cart-list")
+function showCart(arr){
+    ourCartDiv.innerHTML = "" // Clear cardDiv everytime you render cart list
+    arr.forEach(product=>{
+        const newDiv = document.createElement("div")
+        newDiv.classList.add("cart-item")
+        newDiv.innerHTML = `
+            <div>
+                <p> ${product.name} </p>
+                <span class="item-count">${product.count}x<span>
+                <span class="item-price"> ${new Intl.NumberFormat().format(product.price * 128)} <span>
+                <span class="item-total"> ${new Intl.NumberFormat().format(product.count *product.price * 128)} <span>
+            </div>
+            <button class="remove-from-cart" id="remove-${product.id}"> x </button>
+        `
+        ourCartDiv.append(newDiv)
+    })
+    const removeButtons=document.querySelectorAll(".remove-from-cart")
+     removeButtons.forEach(button => {
+       button.addEventListener("click",(e)=> {
+           const clickedProductId=button.id.split("-")[1]
+           removeFromCart(clickedProductId)
+           
+       })
+    })
+
+}
+
+function removeFromCart(id){
+    cart = cart.filter(p=>p.id!=id)
+
+    showCart(cart)
+}
+
+
+function changeButtonToCounter(element, id){
+    console.log(element);
+    element.innerHTML = `
+      <button class="decrease" id="decrease-${id}"> - </button>
+      <span class="cartcount" id="cartcount-"cartcount-${id}> 1</span>
+      <button class="increase" id="increase-${id}"> + </button>
+    `
+
+    document.getElementById(`decrease-${id}`).addEventListener("click", ()=>{
+        let theProduct = cart.find(p=>p.id==id )
+        theProduct.count = theProduct.count - 1
+        document.getElementById(`cartcount-${id}`).textContent = theProduct.count
+        cart = cart.filter(p=>p.id!=id) 
+        cart.push(theProduct)
+        showCart(cart)
+    })
+    document.getElementById(`increase-${id}`).addEventListener("click", ()=>{
+        let theProduct = cart.find(p=>p.id==id )
+        theProduct.count = theProduct.count + 1
+        document.getElementById(`cartcount-${id}`).textContent = theProduct.count
+        cart = cart.filter(p=>p.id!=id) 
+        cart.push(theProduct)
+        showCart(cart)
+    })
+}
+
+
+
+
+     
+
+// look into  data attribute
+
+// try remove item from cart using remove-from-cart button
+
+//look into data attribute
+//try remove item from cart using remove-from-cart button
+//try to add item to cart using add-to-cart button
+
+//try remove item from cart using remove-from-cart button
+
+
+

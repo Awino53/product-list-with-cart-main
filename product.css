@@ -1,3 +1,4 @@
+
 *{
     margin: 0;
     padding: 0;
@@ -9,8 +10,9 @@ body{
 #products-list{
     display: flex;
     flex-wrap: wrap;
+    gap: 20px;
 }
-#product-list img{
+#products-list img{
     width: 100%;
 }
 .tablet{
@@ -19,19 +21,24 @@ body{
 .desktop{
     display: none;
 }
+.product-card{
+    width: 28%;
+}
 /* tablet */
-@media (min-width:560px){
+@media (min-width: 560px){
     .mobile{
         display: none;
     }
     .tablet{
         display: block;
     }
-     
+}
+.action-box{
+    display: flex;
+    justify-content: space-between;
 }
 /* desktop */
-@media (max-width:880px){
-     
+@media (min-width: 880px){
     .tablet{
         display: none;
     }
